@@ -31,7 +31,7 @@ able.noConflict = function() { root.able = able; return able; };
 		proto.off = function(event_type, callback) {
 			var listeners = this[listener_prop_name][event_type];
 			if(isArray(listeners)) {
-				this.[listener_prop_name][event_type] = filter(listeners, function(listener) {
+				this[listener_prop_name][event_type] = filter(listeners, function(listener) {
 					return listener.callback === callback;
 				});
 			}
