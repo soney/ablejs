@@ -40,7 +40,7 @@ able.noConflict = function() { root.able = able; return able; };
 		proto[emit_fn_name] = function(event_type) {
 			var args = rest(arguments);
 			args.push(event_type);
-			each(this.[listener_prop_name][event_type], function(listener) {
+			each(this[listener_prop_name][event_type], function(listener) {
 				var context = listener.context || this;
 				listener.callback.apply(context, args);
 			});
@@ -136,9 +136,18 @@ var isFunction = function(obj) {
 	return toString.call(obj) == '[object Function]';
 };
 
+// Is a given variable a string?
 var isString = function(obj) {
 	return toString.call(obj) == '[object String]';
 };
+
+// Is a given variable an arguments object?
+var isArguments = function(obj) {
+	return toString.call(obj) == '[object Arguments]';
+};
+
+// Establish the object that gets returned to break out of a loop iteration.
+var breaker = {};
 
 var extend = function(obj) {
 	var args = slice.call(arguments, 1)
@@ -206,6 +215,11 @@ var rest = function(array, index, guard) {
 	return slice.call(array, (index == null) || guard ? 1 : index);
 };
 
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var has = function(obj, key) {
+	return hasOwnProperty.call(obj, key);
+};
+
 /*
 var construct = function(constructor, args) {
     var F = function() { return constructor.apply(this, args); }
@@ -218,8 +232,6 @@ var slice = ArrayProto.slice,
     nativeForEach      = ArrayProto.forEach,
     nativeMap          = ArrayProto.map;
 
-// Establish the object that gets returned to break out of a loop iteration.
-var breaker = {};
 
 var camel_case = (function() {
 	var rdashAlpha = /-([a-z]|[0-9])/ig, rmsPrefix = /^-ms-/;
@@ -298,10 +310,6 @@ var isObject = function(obj) {
 	return obj === Object(obj);
 };
 
-// Is a given variable an arguments object?
-var isArguments = function(obj) {
-	return toString.call(obj) == '[object Arguments]';
-};
   
 
 // Set a constructor's prototype
@@ -357,10 +365,6 @@ var map = function(obj, iterator, context) {
 };
 
 
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-var has = function(obj, key) {
-	return hasOwnProperty.call(obj, key);
-};
 
 
 */
