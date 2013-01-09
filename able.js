@@ -28,22 +28,42 @@ able.noConflict = function() { root.able = able; return able; };
 			listeners.push({callback: callback, context: context});
 			return this;
 		};
+		proto.once = function(event_type, callback, context) {
+			var listeners = this[listener_prop_name][event_type];
+			if(!isArray(listeners)) {
+				listeners = this[listener_prop_name][event_type] = [];
+			}
+			listeners.push({callback: callback, context: context, once: true});
+			return this;
+		};
 		proto.off = function(event_type, callback) {
 			var listeners = this[listener_prop_name][event_type];
-			if(isArray(listeners)) {
-				this[listener_prop_name][event_type] = filter(listeners, function(listener) {
-					return listener.callback === callback;
-				});
+			if(listeners) {
+				for(var i = 0; i<listeners.length; i++) {
+					var listener = listeners[i];
+					if(listener.callback === callback) {
+						listeners.splice(i, 1);
+						i--;
+					}
+				}
 			}
 			return this;
 		};
 		proto[emit_fn_name] = function(event_type) {
 			var args = rest(arguments);
 			args.push(event_type);
-			each(this[listener_prop_name][event_type], function(listener) {
-				var context = listener.context || this;
-				listener.callback.apply(context, args);
-			});
+			var listeners = this[listener_prop_name][event_type];
+			if(listeners) {
+				for(var i = 0; i<listeners.length; i++) {
+					var listener = listeners[i];
+					var context = listener.context || this;
+					if(listener.once) {
+						listeners.splice(i, 1);
+						i--;
+					}
+					listener.callback.apply(context, args);
+				}
+			}
 		};
 	};
 }());
