@@ -52,7 +52,7 @@ able.noConflict = function() { root.able = able; return able; };
 		proto[emit_fn_name] = function(event_type) {
 			var args = rest(arguments);
 			args.push(event_type);
-			var listeners = this[listener_prop_name][event_type];
+			var listeners = _.clone(this[listener_prop_name][event_type]);
 			if(listeners) {
 				for(var i = 0; i<listeners.length; i++) {
 					var listener = listeners[i];
