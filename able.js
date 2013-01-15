@@ -22,10 +22,14 @@ able.noConflict = function() { root.able = able; return able; };
 	able.make_proto_listenable = function(proto) {
 		proto.on = function(event_type, callback, context) {
 			var listeners = this[listener_prop_name][event_type];
-			if(!isArray(listeners)) {
-				listeners = this[listener_prop_name][event_type] = [];
+
+			var linfo = {callback: callback, context: context};
+			if(listeners) {
+				listeners.push(linfo);
+			} else {
+				listeners = this[listener_prop_name][event_type] = [linfo];
 			}
-			listeners.push({callback: callback, context: context});
+
 			return this;
 		};
 		proto.once = function(event_type, callback, context) {
@@ -47,21 +51,30 @@ able.noConflict = function() { root.able = able; return able; };
 					}
 				}
 			}
+			if(listeners.length === 0) {
+				delete this[listener_prop_name][event_type];
+			}
 			return this;
 		};
 		proto[emit_fn_name] = function(event_type) {
 			var args = rest(arguments);
 			args.push(event_type);
-			var listeners = _.clone(this[listener_prop_name][event_type]);
+			var listeners = this[listener_prop_name][event_type];
 			if(listeners) {
-				for(var i = 0; i<listeners.length; i++) {
-					var listener = listeners[i];
+				var cloned_listeners = _.clone(listeners);
+				var len = cloned_listeners.length;
+				var num_removed = 0;
+				for(var i = 0; i<len; i++) {
+					var listener = cloned_listeners[i];
 					var context = listener.context || this;
-					if(listener.once) {
-						listeners.splice(i, 1);
-						i--;
-					}
 					listener.callback.apply(context, args);
+					if(listener.once === true) {
+						listeners.splice(i - num_removed, 1);
+						num_removed++;
+					}
+				}
+				if(listeners.length === 0) {
+					delete this[listener_prop_name][event_type];
 				}
 			}
 		};
