@@ -61,7 +61,7 @@ able.noConflict = function() { root.able = able; return able; };
 			args.push(event_type);
 			var listeners = this[listener_prop_name][event_type];
 			if(listeners) {
-				var cloned_listeners = _.clone(listeners);
+				var cloned_listeners = listeners.slice();
 				var len = cloned_listeners.length;
 				var num_removed = 0;
 				for(var i = 0; i<len; i++) {
@@ -80,13 +80,27 @@ able.noConflict = function() { root.able = able; return able; };
 		};
 	};
 }());
+	
+
+var extend = function(obj) {
+	for(var i = 1; i<arguments.length; i++) {
+		var source = arguments[i];
+		if (source) {
+			for(var prop in source) {
+				obj[prop] = source[prop];
+			}
+		}
+	}
+	return obj;
+};
+	
 
 (function() {
 var options_prop_name = "__options"
 	, emit_fn_name = "_emit";
 
 able.make_this_optionable = function(instance) {
-	instance[options_prop_name] = _.extend.apply(_, [{}].concat(_.rest(arguments)));
+	instance[options_prop_name] = _.extend.apply(_, [{}].concat(Array.prototype.slice.call(arguments, 1)));
 };
 
 able.make_proto_optionable = function(proto) {
