@@ -50,9 +50,9 @@ able.noConflict = function() { root.able = able; return able; };
 						i--;
 					}
 				}
-			}
-			if(listeners.length === 0) {
-				delete this[listener_prop_name][event_type];
+				if(listeners.length === 0) {
+					delete this[listener_prop_name][event_type];
+				}
 			}
 			return this;
 		};
