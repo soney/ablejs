@@ -79,6 +79,11 @@ able.noConflict = function() { root.able = able; return able; };
 			}
 		};
 	};
+
+	able.destroy_this_listenable = function(instance) {
+		delete instance[listener_prop_name];
+		delete instance.forward;
+	};
 }());
 	
 
