@@ -105,7 +105,7 @@ var options_prop_name = "__options"
 	, emit_fn_name = "_emit";
 
 able.make_this_optionable = function(instance) {
-	instance[options_prop_name] = _.extend.apply(_, [{}].concat(Array.prototype.slice.call(arguments, 1)));
+	instance[options_prop_name] = extend.apply(_, [{}].concat(Array.prototype.slice.call(arguments, 1)));
 };
 
 able.make_proto_optionable = function(proto) {
