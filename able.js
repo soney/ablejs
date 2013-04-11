@@ -130,9 +130,9 @@ var able = (function (root) {
 	};
 
 
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
+	var hOP = Object.prototype.hasOwnProperty;
 	var has = function (obj, key) {
-		return hasOwnProperty.call(obj, key);
+		return hOP.call(obj, key);
 	};
 
 
