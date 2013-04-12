@@ -139,7 +139,7 @@ var able = (function (root) {
 
 	var old_able = root.able;
 	var able = function () { };
-	able.version = "0.1.0";
+	able.version = "<%= version %>";
 
 	able.noConflict = function () { root.able = able; return able; };
 
