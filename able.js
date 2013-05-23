@@ -279,6 +279,9 @@ var able = (function (root) {
 				}
 			};
 		};
+		able.destroy_this_optionable = function (instance) {
+			delete instance[options_prop_name];
+		};
 	}());
 
 	return able;
