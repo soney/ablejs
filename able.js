@@ -157,17 +157,42 @@ var able = (function (root) {
 			};
 		};
 
+		var do_on = function(event_type, callback, context) {
+			var listeners = this[listener_prop_name][event_type];
+
+			var linfo = {callback: callback, context: context};
+			if (listeners) {
+				listeners.push(linfo);
+			} else {
+				listeners = this[listener_prop_name][event_type] = [linfo];
+			}
+		};
+		var do_off = function(event_type, callback) {
+			var listeners = this[listener_prop_name][event_type];
+			var i;
+			if (listeners) {
+				for (i = 0; i < listeners.length; i += 1) {
+					var listener = listeners[i];
+					if (listener.callback === callback) {
+						listeners.splice(i, 1);
+						i -= 1;
+					}
+				}
+				if (listeners.length === 0) {
+					delete this[listener_prop_name][event_type];
+				}
+			}
+		};
+
 		able.make_proto_listenable = function (proto) {
 			proto.on = function (event_type, callback, context) {
-				var listeners = this[listener_prop_name][event_type];
-
-				var linfo = {callback: callback, context: context};
-				if (listeners) {
-					listeners.push(linfo);
+				if(isString(event_type)) {
+					do_on.apply(this, arguments);
 				} else {
-					listeners = this[listener_prop_name][event_type] = [linfo];
+					each(event_type, function(cb, et) {
+						do_on.call(this, et, cb, context);
+					}, this);
 				}
-
 				return this;
 			};
 			proto.once = function (event_type, callback, context) {
@@ -179,19 +204,12 @@ var able = (function (root) {
 				return this;
 			};
 			proto.off = function (event_type, callback) {
-				var listeners = this[listener_prop_name][event_type];
-				var i;
-				if (listeners) {
-					for (i = 0; i < listeners.length; i += 1) {
-						var listener = listeners[i];
-						if (listener.callback === callback) {
-							listeners.splice(i, 1);
-							i -= 1;
-						}
-					}
-					if (listeners.length === 0) {
-						delete this[listener_prop_name][event_type];
-					}
+				if(isString(event_type)) {
+					do_off.apply(this, arguments);
+				} else {
+					each(event_type, function(cb, et) {
+						do_off.call(this, et, cb);
+					}, this);
 				}
 				return this;
 			};
