@@ -231,7 +231,7 @@ var able = (function (root) {
 							num_removed += 1;
 						}
 					}
-					if (listeners.length === 0) {
+					if (listeners.length === 0 && this[listener_prop_name]) { // we may have been destroyed
 						delete this[listener_prop_name][event_type];
 					}
 				}
