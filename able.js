@@ -150,11 +150,13 @@ var able = (function (root) {
 
 		able.make_this_listenable = function (instance) {
 			instance[listener_prop_name] = {};
+			/*
 			instance.forward = function () {
 				var args = toArray(arguments);
 				var type = args[args.length - 1];
 				instance._emit.apply(instance, ([type]).concat(args.slice(0, args.length - 1)));
 			};
+			*/
 		};
 
 		var do_on = function(event_type, callback, context) {
@@ -167,13 +169,13 @@ var able = (function (root) {
 				listeners = this[listener_prop_name][event_type] = [linfo];
 			}
 		};
-		var do_off = function(event_type, callback) {
+		var do_off = function(event_type, callback, context) {
 			var listeners = this[listener_prop_name][event_type];
 			var i;
 			if (listeners) {
 				for (i = 0; i < listeners.length; i += 1) {
 					var listener = listeners[i];
-					if (listener.callback === callback) {
+					if (listener.callback === callback && context && context === listener.context) {
 						listeners.splice(i, 1);
 						i -= 1;
 					}
@@ -213,6 +215,11 @@ var able = (function (root) {
 				}
 				return this;
 			};
+			proto.forward_event = function() {
+				var args = toArray(arguments);
+				var type = args[args.length - 1];
+				this._emit.apply(this, ([type]).concat(args.slice(0, args.length - 1)));
+			};
 			proto[emit_fn_name] = function (event_type) {
 				var i;
 				var args = rest(arguments);
@@ -240,7 +247,7 @@ var able = (function (root) {
 
 		able.destroy_this_listenable = function (instance) {
 			delete instance[listener_prop_name];
-			delete instance.forward;
+			//delete instance.forward;
 		};
 	}());
 
