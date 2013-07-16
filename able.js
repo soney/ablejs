@@ -175,7 +175,7 @@ var able = (function (root) {
 			if (listeners) {
 				for (i = 0; i < listeners.length; i += 1) {
 					var listener = listeners[i];
-					if (listener.callback === callback && context && context === listener.context) {
+					if (listener.callback === callback && (!context || context === listener.context)) {
 						listeners.splice(i, 1);
 						i -= 1;
 					}
