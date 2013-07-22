@@ -161,8 +161,9 @@ var able = (function (root) {
 
 		var do_on = function(event_type, callback, context) {
 			var listeners = this[listener_prop_name][event_type];
+			var args = rest(arguments, 3);
 
-			var linfo = {callback: callback, context: context};
+			var linfo = {callback: callback, context: context, args: args};
 			if (listeners) {
 				listeners.push(linfo);
 			} else {
@@ -191,8 +192,9 @@ var able = (function (root) {
 				if(isString(event_type)) {
 					do_on.apply(this, arguments);
 				} else {
+					context = callback;
 					each(event_type, function(cb, et) {
-						do_on.call(this, et, cb, context);
+						do_on.call(this, et, context);
 					}, this);
 				}
 				return this;
@@ -202,7 +204,8 @@ var able = (function (root) {
 				if (!isArray(listeners)) {
 					listeners = this[listener_prop_name][event_type] = [];
 				}
-				listeners.push({callback: callback, context: context, once: true});
+				var args = rest(arguments, 3);
+				listeners.push({callback: callback, context: context, once: true, args: args});
 				return this;
 			};
 			proto.off = function (event_type, callback) {
@@ -232,7 +235,7 @@ var able = (function (root) {
 					for (i = 0; i < len; i += 1) {
 						var listener = cloned_listeners[i];
 						var context = listener.context || this;
-						listener.callback.apply(context, args);
+						listener.callback.apply(context, listener.args.concat(args));
 						if (listener.once === true) {
 							listeners.splice(i - num_removed, 1);
 							num_removed += 1;
