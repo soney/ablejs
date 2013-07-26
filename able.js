@@ -194,7 +194,7 @@ var able = (function (root) {
 				} else {
 					context = callback;
 					each(event_type, function(cb, et) {
-						do_on.call(this, et, context);
+						do_on.call(this, et, cb, context);
 					}, this);
 				}
 				return this;
